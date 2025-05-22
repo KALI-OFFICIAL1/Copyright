@@ -93,10 +93,10 @@ async def group_guard(client, message: Message):
     if link_pattern.search(text.lower()):
         return await message.delete()
 
-    # 4. Warn users whose bio contains link
+    # 4. Warn if bio has link
     try:
-        user = await client.get_users(message.from_user.id)
-        bio = getattr(user, 'bio', "")
+        member = await client.get_chat_member(message.chat.id, message.from_user.id)
+        bio = getattr(member.user, 'bio', "")
         if bio and link_pattern.search(bio.lower()):
             await message.reply(f"⚠️ {message.from_user.mention}, आपकी bio में link मिला है। कृपया उसे हटा दें, नहीं तो आपको ban कर दिया जाएगा।")
     except Exception as e:
@@ -106,11 +106,11 @@ async def group_guard(client, message: Message):
     if any(word.lower() in text.lower() for word in abuse_words):
         return await message.delete()
 
-# 6. Delete edited messages
 @app.on_edited_message(filters.group)
-async def delete_edited(client, message):
+async def edited_message_warning(client, message: Message):
     try:
         await message.delete()
+        await message.reply(f"✏️ Editing messages is not allowed, {message.from_user.mention}!")
     except:
         pass
 
