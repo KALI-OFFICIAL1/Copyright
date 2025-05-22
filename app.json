@@ -1,0 +1,42 @@
+{
+  "name": "Telegram Security Bot",
+  "description": "A powerful Telegram security bot to filter spam, abusive words, links, long messages, and much more.",
+  "repository": "https://github.com/your-username/your-repo",
+  "logo": "https://envs.sh/52H.jpg",
+  "keywords": ["telegram", "bot", "pyrogram", "security", "filter"],
+  "env": {
+    "API_ID": {
+      "description": "Telegram API ID from https://my.telegram.org",
+      "required": true
+    },
+    "API_HASH": {
+      "description": "Telegram API HASH from https://my.telegram.org",
+      "required": true
+    },
+    "BOT_TOKEN": {
+      "description": "Your bot token from @BotFather",
+      "required": true
+    },
+    "MONGO_URI": {
+      "description": "MongoDB URI (you can use MongoDB Atlas)",
+      "required": false
+    },
+    "LOG_GROUP_ID": {
+      "description": "Group ID where logs will be sent",
+      "required": false
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "addons": [],
+  "stack": "container"
+}
