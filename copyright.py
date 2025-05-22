@@ -2,7 +2,6 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 import re
 import datetime
-import os
 
 API_ID = "21546320"
 API_HASH = "c16805d6f2393d35e7c49527daa317c7"
@@ -14,8 +13,8 @@ SUPPORT_USERNAME = "@silent_era"
 app = Client("group_security_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 abuse_words = [
-    "madarchod", "bhenchodd", "lund", "chut", "gaand", "bsdk", "bahanchod","lwda","lawda","randi","gand","gund","land","18+",
-    "ncert", "allen", "porn", "xxx", "sex", "NCERT", "XII", "page", "Ass",
+    "madarchod", "bhenchodd", "lund", "chut", "gaand", "bsdk", "bahanchod",
+    "ncert", "allen", "porn", "xxx", "sex", "NCERT", "XII", "page", "Ans",
     "meiotic", "divisions", "System.in", "Scanner", "void", "nextInt"
 ]
 
@@ -37,8 +36,8 @@ async def start_handler(client, message):
     await message.reply_photo(
         photo="https://envs.sh/52H.jpg",
         caption=("🤖 𝖦𝗋𝗈𝗎𝗉 𝖲𝖾𝖼𝗎𝗋𝗂𝗍𝗒 𝖱𝗈𝖻𝗈𝗍 🛡️\n"
-                 "𝖶𝖾𝗅𝖼𝗈𝗆𝖾 𝗍𝗈 𝖦𝗋𝗈𝗎𝗉𝖲𝖾𝖼𝗎𝗋𝗂𝗍𝗒𝖱𝗈𝖻𝗈𝗍, 𝗒𝗈𝗎𝗋 𝗏𝗂𝗀𝗂𝗅𝖺𝗇𝗍 𝗀𝗎𝖺𝗋𝖽𝗂𝖺𝗇!\n"
-                 "𝖮𝗎𝗋 𝗆𝗂𝗌𝗌𝗂𝗈𝗇 𝗂𝗌 𝗍𝗈 𝖾𝗇𝗌𝗎𝗋𝖾 𝖺 𝗌𝖾𝖼𝗎𝗋𝖾 𝖺𝗇𝖽 𝗉𝗅𝖾𝖺𝗌𝖺𝗇𝗍 𝖾𝗇𝗏𝗂𝗋𝗈𝗇𝗆𝖾𝗇𝗍."),
+                 "𝖶𝖾𝗅𝖼𝗈𝗆𝖾 𝗍𝗈 𝖦𝗋𝗈𝗎𝗉𝖲𝖾𝖼𝗎𝗋𝗂𝗍𝗒𝖱𝗈𝖻𝗈𝗍, 𝗒𝗈𝗎𝗋 𝗏𝗂𝗀𝗂𝗅𝖺𝗇𝗍 𝗀𝗎𝖺𝗋𝖽𝗂𝖺𝗇 𝗂𝗇 𝗍𝗁𝗂𝗌 𝖳𝖾𝗅𝖾𝗀𝗋𝖺𝗆 𝗌𝗉𝖺𝖼𝖾!\n"
+                 "𝖮𝗎𝗋 𝗆𝗂𝗌𝗌𝗂𝗈𝗇 𝗂𝗌 𝗍𝗈 𝖾𝗇𝗌𝗎𝗋𝖾 𝖺 𝗌𝖾𝖼𝗎𝗋𝖾 𝖺𝗇𝖽 𝗉𝗅𝖾𝖺𝗌𝖺𝗇𝗍 𝖾𝗇𝗏𝗂𝗋𝗈𝗇𝗆𝖾𝗇𝗍 𝖿𝗈𝗋 𝖾𝗏𝖾𝗋𝗒𝗈𝗇𝖾."),
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton("Owner", url=f"https://t.me/{OWNER_USERNAME[1:]}"),
              InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_USERNAME[1:]}")],
@@ -47,7 +46,7 @@ async def start_handler(client, message):
     )
     await app.send_message(
         LOGS_CHAT,
-        f"Bot started by user:\nName: {user.first_name}\nUsername: @{user.username}\nID: {user.id}"
+        f"Bot started by new user:\nName: {user.first_name}\nUsername: @{user.username}\nID: {user.id}"
     )
 
 @app.on_message(filters.command("ping"))
@@ -84,45 +83,40 @@ async def group_guard(client, message: Message):
 
     # 1. Delete long messages
     if len(text) > 200:
-        print("Deleted long message")
         return await message.delete()
 
-    # 2. Delete PDFs
+    # 2. Warn if PDF file contains link in caption or filename
     if message.document and message.document.mime_type == "application/pdf":
-        print("Deleted PDF file")
+        caption = message.caption or ""
+        filename = message.document.file_name or ""
+        if link_pattern.search(caption.lower()) or link_pattern.search(filename.lower()):
+            return await message.reply(
+                f"⚠️ {message.from_user.mention}, please avoid sending links in PDF files!"
+            )
+        else:
+            return await message.delete()
+
+    # 3. Delete edited messages
+    if hasattr(message, "edit_date") and message.edit_date:
         return await message.delete()
 
-    # 3. Delete edited messages (handled separately below)
-
-    # 4. Delete links
+    # 4. Delete links in normal messages
     if link_pattern.search(text.lower()):
-        print("Deleted link message")
         return await message.delete()
 
-    # 5. Warn if user's bio has link
+    # 5. Warn if bio has link (NO mute)
     try:
         user = await client.get_users(message.from_user.id)
         bio = user.bio or ""
         if link_pattern.search(bio.lower()):
             await message.reply(
-                f"⚠️ {message.from_user.mention}, please remove links from your bio or you may be muted!"
+                f"⚠️ {message.from_user.mention}, please remove links from your bio to avoid action!"
             )
-            print(f"Warned {message.from_user.id} for bio link")
     except Exception as e:
         print(f"Bio check error: {e}")
 
     # 6. Delete abusive messages
     if any(word.lower() in text.lower() for word in abuse_words):
-        print("Deleted abusive message")
         return await message.delete()
-
-# Handle edited messages
-@app.on_edited_message(filters.group)
-async def edited_message_handler(client, message: Message):
-    try:
-        await message.delete()
-        print(f"Deleted edited message from {message.from_user.id}")
-    except Exception as e:
-        print(f"Error deleting edited message: {e}")
 
 app.run()
