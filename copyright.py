@@ -110,4 +110,16 @@ async def group_guard(client, message: Message):
     if any(word.lower() in text.lower() for word in abuse_words):
         return await message.delete()
 
+# NEW: Delete edited messages and warn if bio has link
+@app.on_message(filters.edited & filters.group)
+async def edited_message_handler(client, message: Message):
+    await message.delete()
+    try:
+        user = await client.get_users(message.from_user.id)
+        bio = user.bio or ""
+        if link_pattern.search(bio.lower()):
+            await message.reply(f"{message.from_user.mention}, please remove link from your bio or you may be muted.")
+    except:
+        pass
+
 app.run()
