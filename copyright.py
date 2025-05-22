@@ -4,12 +4,12 @@ import re
 import datetime
 import os
 
-API_ID = 12345678  # Replace with your API ID
-API_HASH = "your_api_hash"
-BOT_TOKEN = "your_bot_token"
-LOGS_CHAT = -1001234567890  # Replace with your logs group/chat id
-OWNER_USERNAME = "@moh_maya_official"
-SUPPORT_USERNAME = "@frozenTools"
+API_ID = "21546320"  # Replace with your API ID
+API_HASH = "c16805d6f2393d35e7c49527daa317c7"
+BOT_TOKEN = "8020578503:AAEPufV2GAM26SvKafJYIAQh4ARPaWRZNA0"
+LOGS_CHAT = -1002100433415  # Replace with your logs group/chat id
+OWNER_USERNAME = "@silent_era"
+SUPPORT_USERNAME = "@silent_era"
 
 app = Client("group_security_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
