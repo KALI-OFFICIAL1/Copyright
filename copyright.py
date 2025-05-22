@@ -69,12 +69,13 @@ async def broadcast_handler(client, message):
         return await message.reply("Usage: `/broadcast Your Message Here`", quote=True)
     text = message.text.split(" ", 1)[1]
     count = 0
-    async for user in app.get_users():
-        try:
-            await app.send_message(user.id, text)
-            count += 1
-        except:
-            pass
+    async for dialog in app.iter_dialogs():
+        if dialog.chat.type == "private":
+            try:
+                await app.send_message(dialog.chat.id, text)
+                count += 1
+            except:
+                pass
     await message.reply(f"Broadcast sent to {count} users.")
 
 @app.on_message(filters.group)
@@ -89,9 +90,7 @@ async def group_guard(client, message: Message):
     if message.document and message.document.mime_type == "application/pdf":
         return await message.delete()
 
-    # 3. Delete edited messages
-    if message.edit_date:
-        return await message.delete()
+    # 3. Delete edited messages — will be handled by another handler
 
     # 4. Delete links
     if link_pattern.search(text.lower()):
@@ -110,8 +109,8 @@ async def group_guard(client, message: Message):
     if any(word.lower() in text.lower() for word in abuse_words):
         return await message.delete()
 
-# NEW: Delete edited messages and warn if bio has link
-@app.on_message(filters.edited & filters.group)
+# NEW: Delete edited messages and warn if bio contains link
+@app.on_edited_message(filters.group)
 async def edited_message_handler(client, message: Message):
     await message.delete()
     try:
