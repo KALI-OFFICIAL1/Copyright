@@ -14,7 +14,7 @@ SUPPORT_USERNAME = "@silent_era"
 app = Client("group_security_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 abuse_words = [
-    "madarchod", "bhenchodd", "lund", "chut", "gaand", "bsdk", "bahanchod",
+    "madarchod", "bhenchodd", "lund", "chut", "gaand", "bsdk", "bahanchod","Randi","gand","lawde",
     "ncert", "allen", "porn", "xxx", "sex", "NCERT", "XII", "page", "Ans",
     "meiotic", "divisions", "System.in", "Scanner", "void", "nextInt"
 ]
