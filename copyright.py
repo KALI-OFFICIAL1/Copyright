@@ -3,10 +3,10 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 import re
 import datetime
 
-API_ID = "21546320"
+API_ID = "21546320"  # Replace with your API ID
 API_HASH = "c16805d6f2393d35e7c49527daa317c7"
 BOT_TOKEN = "8020578503:AAEPufV2GAM26SvKafJYIAQh4ARPaWRZNA0"
-LOGS_CHAT = -1002100433415
+LOGS_CHAT = -1002100433415  # Replace with your logs group/chat id
 OWNER_USERNAME = "@silent_era"
 SUPPORT_USERNAME = "@silent_era"
 
@@ -85,29 +85,22 @@ async def group_guard(client, message: Message):
     if len(text) > 200:
         return await message.delete()
 
-    # 2. Warn if PDF file contains link in caption or filename
+    # 2. Delete PDFs
     if message.document and message.document.mime_type == "application/pdf":
-        caption = message.caption or ""
-        filename = message.document.file_name or ""
-        if link_pattern.search(caption.lower()) or link_pattern.search(filename.lower()):
-            return await message.reply(
-                f"⚠️ {message.from_user.mention}, please avoid sending links in PDF files!"
-            )
-        else:
-            return await message.delete()
-
-    # 3. Delete edited messages
-    if hasattr(message, "edit_date") and message.edit_date:
         return await message.delete()
 
-    # 4. Delete links in normal messages
+    # 3. Delete links
     if link_pattern.search(text.lower()):
         return await message.delete()
 
-    # 5. Warn if bio has link (NO mute)
+    # 4. Delete abusive messages
+    if any(word.lower() in text.lower() for word in abuse_words):
+        return await message.delete()
+
+    # 5. Warn if bio has link
     try:
-        user = await client.get_users(message.from_user.id)
-        bio = user.bio or ""
+        user_chat = await client.get_chat(message.from_user.id)
+        bio = user_chat.bio or ""
         if link_pattern.search(bio.lower()):
             await message.reply(
                 f"⚠️ {message.from_user.mention}, please remove links from your bio to avoid action!"
@@ -115,8 +108,11 @@ async def group_guard(client, message: Message):
     except Exception as e:
         print(f"Bio check error: {e}")
 
-    # 6. Delete abusive messages
-    if any(word.lower() in text.lower() for word in abuse_words):
-        return await message.delete()
+@app.on_message(filters.group & filters.edited)
+async def delete_edited(client, message):
+    try:
+        await message.delete()
+    except:
+        pass
 
 app.run()
