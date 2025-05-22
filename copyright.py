@@ -4,18 +4,18 @@ import re
 import datetime
 import os
 
-API_ID = "21546320"  # Replace with your API ID
+API_ID = "21546320"
 API_HASH = "c16805d6f2393d35e7c49527daa317c7"
 BOT_TOKEN = "8020578503:AAEPufV2GAM26SvKafJYIAQh4ARPaWRZNA0"
-LOGS_CHAT = -1002100433415  # Replace with your logs group/chat id
+LOGS_CHAT = -1002100433415
 OWNER_USERNAME = "@silent_era"
 SUPPORT_USERNAME = "@silent_era"
 
 app = Client("group_security_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 abuse_words = [
-    "madarchod", "bhenchodd", "lund", "chut", "gaand", "bsdk", "bahanchod","Randi","gand","lawde",
-    "ncert", "allen", "porn", "xxx", "sex", "NCERT", "XII", "page", "Ans",
+    "madarchod", "bhenchodd", "lund", "chut", "gaand", "bsdk", "bahanchod",
+    "ncert", "allen", "porn", "xxx", "sex", "NCERT", "XII", "page", "Ass",
     "meiotic", "divisions", "System.in", "Scanner", "void", "nextInt"
 ]
 
@@ -37,8 +37,8 @@ async def start_handler(client, message):
     await message.reply_photo(
         photo="https://envs.sh/52H.jpg",
         caption=("🤖 𝖦𝗋𝗈𝗎𝗉 𝖲𝖾𝖼𝗎𝗋𝗂𝗍𝗒 𝖱𝗈𝖻𝗈𝗍 🛡️\n"
-                 "𝖶𝖾𝗅𝖼𝗈𝗆𝖾 𝗍𝗈 𝖦𝗋𝗈𝗎𝗉𝖲𝖾𝖼𝗎𝗋𝗂𝗍𝗒𝖱𝗈𝖻𝗈𝗍, 𝗒𝗈𝗎𝗋 𝗏𝗂𝗀𝗂𝗅𝖺𝗇𝗍 𝗀𝗎𝖺𝗋𝖽𝗂𝖺𝗇 𝗂𝗇 𝗍𝗁𝗂𝗌 𝖳𝖾𝗅𝖾𝗀𝗋𝖺𝗆 𝗌𝗉𝖺𝖼𝖾!\n"
-                 "𝖮𝗎𝗋 𝗆𝗂𝗌𝗌𝗂𝗈𝗇 𝗂𝗌 𝗍𝗈 𝖾𝗇𝗌𝗎𝗋𝖾 𝖺 𝗌𝖾𝖼𝗎𝗋𝖾 𝖺𝗇𝖽 𝗉𝗅𝖾𝖺𝗌𝖺𝗇𝗍 𝖾𝗇𝗏𝗂𝗋𝗈𝗇𝗆𝖾𝗇𝗍 𝖿𝗈𝗋 𝖾𝗏𝖾𝗋𝗒𝗈𝗇𝖾."),
+                 "𝖶𝖾𝗅𝖼𝗈𝗆𝖾 𝗍𝗈 𝖦𝗋𝗈𝗎𝗉𝖲𝖾𝖼𝗎𝗋𝗂𝗍𝗒𝖱𝗈𝖻𝗈𝗍, 𝗒𝗈𝗎𝗋 𝗏𝗂𝗀𝗂𝗅𝖺𝗇𝗍 𝗀𝗎𝖺𝗋𝖽𝗂𝖺𝗇!\n"
+                 "𝖮𝗎𝗋 𝗆𝗂𝗌𝗌𝗂𝗈𝗇 𝗂𝗌 𝗍𝗈 𝖾𝗇𝗌𝗎𝗋𝖾 𝖺 𝗌𝖾𝖼𝗎𝗋𝖾 𝖺𝗇𝖽 𝗉𝗅𝖾𝖺𝗌𝖺𝗇𝗍 𝖾𝗇𝗏𝗂𝗋𝗈𝗇𝗆𝖾𝗇𝗍."),
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton("Owner", url=f"https://t.me/{OWNER_USERNAME[1:]}"),
              InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_USERNAME[1:]}")],
@@ -47,7 +47,7 @@ async def start_handler(client, message):
     )
     await app.send_message(
         LOGS_CHAT,
-        f"Bot started by new user:\nName: {user.first_name}\nUsername: @{user.username}\nID: {user.id}"
+        f"Bot started by user:\nName: {user.first_name}\nUsername: @{user.username}\nID: {user.id}"
     )
 
 @app.on_message(filters.command("ping"))
@@ -84,41 +84,45 @@ async def group_guard(client, message: Message):
 
     # 1. Delete long messages
     if len(text) > 200:
+        print("Deleted long message")
         return await message.delete()
 
     # 2. Delete PDFs
     if message.document and message.document.mime_type == "application/pdf":
+        print("Deleted PDF file")
         return await message.delete()
 
-    # 3. Delete edited messages — will be handled by another handler
+    # 3. Delete edited messages (handled separately below)
 
     # 4. Delete links
     if link_pattern.search(text.lower()):
+        print("Deleted link message")
         return await message.delete()
 
-    # 5. Mute users whose bio contains link
-    try:
-        bio = (await client.get_users(message.from_user.id)).bio or ""
-        if link_pattern.search(bio.lower()):
-            await message.chat.restrict_member(message.from_user.id, permissions={})
-            await message.reply(f"{message.from_user.mention} muted due to link in bio.")
-    except:
-        pass
-
-    # 6. Delete abusive messages
-    if any(word.lower() in text.lower() for word in abuse_words):
-        return await message.delete()
-
-# NEW: Delete edited messages and warn if bio contains link
-@app.on_edited_message(filters.group)
-async def edited_message_handler(client, message: Message):
-    await message.delete()
+    # 5. Warn if user's bio has link
     try:
         user = await client.get_users(message.from_user.id)
         bio = user.bio or ""
         if link_pattern.search(bio.lower()):
-            await message.reply(f"{message.from_user.mention}, please remove link from your bio or you may be muted.")
-    except:
-        pass
+            await message.reply(
+                f"⚠️ {message.from_user.mention}, please remove links from your bio or you may be muted!"
+            )
+            print(f"Warned {message.from_user.id} for bio link")
+    except Exception as e:
+        print(f"Bio check error: {e}")
+
+    # 6. Delete abusive messages
+    if any(word.lower() in text.lower() for word in abuse_words):
+        print("Deleted abusive message")
+        return await message.delete()
+
+# Handle edited messages
+@app.on_edited_message(filters.group)
+async def edited_message_handler(client, message: Message):
+    try:
+        await message.delete()
+        print(f"Deleted edited message from {message.from_user.id}")
+    except Exception as e:
+        print(f"Error deleting edited message: {e}")
 
 app.run()
