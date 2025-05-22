@@ -1,12 +1,13 @@
 from pyrogram import Client, filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ChatPermissions
 import re
 import datetime
+import os
 
-API_ID = "21546320"
+API_ID = "21546320"  # Replace with your API ID
 API_HASH = "c16805d6f2393d35e7c49527daa317c7"
 BOT_TOKEN = "8020578503:AAEPufV2GAM26SvKafJYIAQh4ARPaWRZNA0"
-LOGS_CHAT = -1002100433415
+LOGS_CHAT = -1002100433415  # Replace with your logs group/chat id
 OWNER_USERNAME = "@silent_era"
 SUPPORT_USERNAME = "@silent_era"
 
@@ -93,14 +94,15 @@ async def group_guard(client, message: Message):
     if link_pattern.search(text.lower()):
         return await message.delete()
 
-    # 4. Warn if bio has link
+    # 4. Mute users whose bio contains link
     try:
-        member = await client.get_chat_member(message.chat.id, message.from_user.id)
-        bio = getattr(member.user, 'bio', "")
-        if bio and link_pattern.search(bio.lower()):
-            await message.reply(f"⚠️ {message.from_user.mention}, आपकी bio में link मिला है। कृपया उसे हटा दें, नहीं तो आपको ban कर दिया जाएगा।")
-    except Exception as e:
-        print("Bio check error:", e)
+        user_obj = await client.get_chat_member(message.chat.id, message.from_user.id)
+        if hasattr(user_obj.user, "bio"):
+            bio = user_obj.user.bio or ""
+            if link_pattern.search(bio.lower()):
+                await message.reply(f"{message.from_user.mention}, please remove the link from your bio or you may get banned!")
+    except:
+        pass
 
     # 5. Delete abusive messages
     if any(word.lower() in text.lower() for word in abuse_words):
@@ -108,10 +110,12 @@ async def group_guard(client, message: Message):
 
 @app.on_edited_message(filters.group)
 async def edited_message_warning(client, message: Message):
-    try:
-        await message.delete()
-        await message.reply(f"✏️ Editing messages is not allowed, {message.from_user.mention}!")
-    except:
-        pass
+    # Ignore reactions; only act on real edits
+    if message.text or message.caption or message.media:
+        try:
+            await message.delete()
+            await message.reply(f"✏️ Editing messages is not allowed, {message.from_user.mention}!")
+        except:
+            pass
 
 app.run()
