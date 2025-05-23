@@ -14,7 +14,8 @@ from pyrogram.enums import ChatMemberStatus, ChatType
 from pyrogram.raw.types import UpdateEditMessage, UpdateEditChannelMessage
 from apscheduler.schedulers.background import BackgroundScheduler
 
-API_ID = "22243185" API_HASH = "39d926a67155f59b722db787a23893ac" BOT_TOKEN = "8020578503:AAEPufV2GAM26SvKafJYIAQh4ARPaWRZNA0" MONGO_URL = "mongodb://localhost:27017"  # Change this to your MongoDB URI DEVS = [6908972904]  # List of developer user_ids BOT_USERNAME = "silent_copyright_bot"
+API_ID = "22243185"
+ API_HASH = "39d926a67155f59b722db787a23893ac" BOT_TOKEN = "8020578503:AAEPufV2GAM26SvKafJYIAQh4ARPaWRZNA0" MONGO_URL = "mongodb+srv://manoranjanhor43:somuxd@manoranjan.wsglmdq.mongodb.net/?retryWrites=true&w=majority&appName=Manoranjan"  # Change this to your MongoDB URI DEVS = "6908972904"  # List of developer user_ids BOT_USERNAME = "silent_copyright_bot"
 
 MongoDB setup
 
