@@ -1,1 +1,1 @@
-worker: python3 copyright.py
+worker: python3 anti_copyright_bot.py
