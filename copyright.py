@@ -77,16 +77,7 @@ async def start_message(_, message: Message):
     await message.reply_photo(
         photo=photo_url,
         caption=(
-            f"Hello {message.from_user.mention}, I'm Anti - CopyRight Bot
-
-"
-            " > I can save your groups from Copyrights 😉
-
-"
-            " Work: I'll Delete all medias of your group in every 1 hour ➰
-
-"
-            " Process?: Simply add me in your group and promote as admin with delete messages right!"
+            f"Hello {message.from_user.mention}, I'm Anti - CopyRight Bot\n > I can save your groups from Copyrights 😉\nWork: I'll Delete all medias of your group in every 1 hour \n Process?: Simply add me in your group and promote as admin with delete messages right!"
         ),
         reply_markup=InlineKeyboardMarkup(btn)
     )
