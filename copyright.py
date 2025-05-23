@@ -60,7 +60,7 @@ def add_group(group_id):
 async def ping(_, e: Message):
     start = datetime.datetime.now()
     add_user(e.from_user.id)
-    photo_url = "https://te.legra.ph/file/fbe4c7736ac2bfc651ea6.jpg"
+    photo_url = "https://graph.org/file/b9300e15bf584bdff00a7-60231a72dc27cb029d.jpg"
     btn = InlineKeyboardMarkup([
         [InlineKeyboardButton("+ Add me in group +", url=f"http://t.me/{BOT_USERNAME}?startgroup=s&admin=delete_messages")],
         [InlineKeyboardButton("✖ Close", callback_data="close_ping")]
@@ -73,7 +73,7 @@ async def ping(_, e: Message):
 async def start_message(_, message: Message):
     add_user(message.from_user.id)
     btn = [[InlineKeyboardButton("+ Add me in group +", url=f"http://t.me/{BOT_USERNAME}?startgroup=s&admin=delete_messages")]]
-    photo_url = "https://te.legra.ph/file/fbe4c7736ac2bfc651ea6.jpg"
+    photo_url = "https://graph.org/file/bba38ef4b40c6860f52f5-72adfc3f156cb27ee7.jpg"
     await message.reply_photo(
         photo=photo_url,
         caption=(
