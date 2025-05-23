@@ -15,11 +15,11 @@ import traceback
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
-API_ID = 29593257
-API_HASH = "e9a3897c961f8dce2a0a88ab8d3dd843"
-BOT_TOKEN = "7370306201:AAGoUHzBkSSQYyEbEzIKMNNksAMD81EbObc"
-DEVS = [5690711835, 6312693124]
-BOT_USERNAME = "BOT"  # change your bot username without @
+API_ID = "22243185"
+API_HASH = "39d926a67155f59b722db787a23893ac"
+BOT_TOKEN = "8020578503:AAEPufV2GAM26SvKafJYIAQh4ARPaWRZNA0"
+DEVS = [6908972904]
+BOT_USERNAME = "@silent_copyright_bot"  # change your bot username without @
 
 ALL_GROUPS = []
 TOTAL_USERS = []
@@ -28,7 +28,7 @@ DISABLE_CHATS = []
 GROUP_MEDIAS = {}
 
 # Add your blacklist words here in lowercase
-BLACKLIST_WORDS = ["badword1", "badword2", "spam", "fuck", "shit"]  # উদাহরণ, তোমার মতো বদলাও
+BLACKLIST_WORDS = ["mc","madarchod","randi","sex,"xxx","gand","lund","land","Mc","bc","bhenchod","chut","lawda","gandu", "spam", "fuck", "shit"]  # উদাহরণ, তোমার মতো বদলাও
 
 DELETE_MESSAGE = [
     "1 Hour complete, I'm doing my work...",
