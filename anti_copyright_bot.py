@@ -15,11 +15,11 @@ from pyrogram.enums import ChatMemberStatus, ChatType
 from pyrogram.raw.types import UpdateEditMessage, UpdateEditChannelMessage
 from apscheduler.schedulers.background import BackgroundScheduler
 
-API_ID = 22243185
+API_ID = "22243185"
 API_HASH = "39d926a67155f59b722db787a23893ac"
 BOT_TOKEN = "8020578503:AAEPufV2GAM26SvKafJYIAQh4ARPaWRZNA0"
-MONGO_URL = "mongodb://localhost:27017"
-DEVS = [6908972904]
+MONGO_URL = "mongodb+srv://manoranjanhor43:somuxd@manoranjan.wsglmdq.mongodb.net/?retryWrites=true&w=majority&appName=Manoranjan"
+DEVS = "6908972904"
 BOT_USERNAME = "silent_copyright_bot"
 
 mongo = MongoClient(MONGO_URL)
@@ -61,7 +61,7 @@ def add_group(group_id):
 async def ping(_, e: Message):
     start = datetime.datetime.now()
     add_user(e.from_user.id)
-    photo_url = "https://te.legra.ph/file/fbe4c7736ac2bfc651ea6.jpg"
+    photo_url = "https://graph.org/file/b9300e15bf584bdff00a7-60231a72dc27cb029d.jpg"
     btn = InlineKeyboardMarkup([
         [InlineKeyboardButton("+ Add me in group +", url=f"http://t.me/{BOT_USERNAME}?startgroup=s&admin=delete_messages")],
         [InlineKeyboardButton("✖ Close", callback_data="close_ping")]
@@ -74,7 +74,7 @@ async def ping(_, e: Message):
 async def start_message(_, message: Message):
     add_user(message.from_user.id)
     btn = [[InlineKeyboardButton("+ Add me in group +", url=f"http://t.me/{BOT_USERNAME}?startgroup=s&admin=delete_messages")]]
-    photo_url = "https://te.legra.ph/file/fbe4c7736ac2bfc651ea6.jpg"
+    photo_url = "https://graph.org/file/bba38ef4b40c6860f52f5-72adfc3f156cb27ee7.jpg"
     await message.reply_photo(
         photo=photo_url,
         caption=(
