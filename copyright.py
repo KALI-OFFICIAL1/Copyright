@@ -28,7 +28,7 @@ DISABLE_CHATS = []
 GROUP_MEDIAS = {}
 
 # Add your blacklist words here in lowercase
-BLACKLIST_WORDS = ["mc","madarchod","randi","sex,"xxx","gand","lund","land","Mc","bc","bhenchod","chut","lawda","gandu", "spam", "fuck", "shit"]  # উদাহরণ, তোমার মতো বদলাও
+BLACKLIST_WORDS = ["mc","madarchod","randi","sex,"xxx","gand","lund","land","mc","bc","bhenchod","chut","lawda","gandu", "spam", "fuck", "shit"]  # উদাহরণ, তোমার মতো বদলাও
 
 DELETE_MESSAGE = [
     "1 Hour complete, I'm doing my work...",
