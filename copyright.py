@@ -18,7 +18,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 API_ID = "22243185"
 API_HASH = "39d926a67155f59b722db787a23893ac"
 BOT_TOKEN = "8020578503:AAEPufV2GAM26SvKafJYIAQh4ARPaWRZNA0"
-DEVS = [6908972904]
+DEVS = "6908972904"
 BOT_USERNAME = "@silent_copyright_bot"  # change your bot username without @
 
 ALL_GROUPS = []
