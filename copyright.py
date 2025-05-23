@@ -1,121 +1,242 @@
-from pyrogram import Client, filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ChatPermissions
-import re
-import datetime
 import os
+import re
+import sys
+import time
+import datetime
+import random 
+import asyncio
+from pytz import timezone
+from pyrogram import filters, Client, idle
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.enums import ChatMemberStatus, ChatType
+from pyrogram.raw.types import UpdateEditMessage, UpdateEditChannelMessage
+import traceback
 
-API_ID = "21546320"  # Replace with your API ID
-API_HASH = "c16805d6f2393d35e7c49527daa317c7"
-BOT_TOKEN = "8020578503:AAEPufV2GAM26SvKafJYIAQh4ARPaWRZNA0"
-LOGS_CHAT = -1002100433415  # Replace with your logs group/chat id
-OWNER_USERNAME = "@silent_era"
-SUPPORT_USERNAME = "@silent_era"
+from apscheduler.schedulers.background import BackgroundScheduler
 
-app = Client("group_security_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-abuse_words = [
-    "madarchod", "bhenchodd", "lund", "chut", "gaand", "bsdk", "bahanchod",
-    "ncert", "allen", "porn", "xxx", "sex", "NCERT", "XII", "page", "Ans",
-    "meiotic", "divisions", "System.in", "Scanner", "void", "nextInt"
+API_ID = 29593257
+API_HASH = "e9a3897c961f8dce2a0a88ab8d3dd843"
+BOT_TOKEN = "7370306201:AAGoUHzBkSSQYyEbEzIKMNNksAMD81EbObc"
+DEVS = [5690711835, 6312693124]
+BOT_USERNAME = "BOT"  # change your bot username without @
+
+ALL_GROUPS = []
+TOTAL_USERS = []
+MEDIA_GROUPS = []
+DISABLE_CHATS = []
+GROUP_MEDIAS = {}
+
+# Add your blacklist words here in lowercase
+BLACKLIST_WORDS = ["badword1", "badword2", "spam", "fuck", "shit"]  # উদাহরণ, তোমার মতো বদলাও
+
+DELETE_MESSAGE = [
+    "1 Hour complete, I'm doing my work...",
+    "Its time to delete all medias!",
+    "No one can Copyright until I'm alive 😤",
+    "Hue hue, let's delete media...",
+    "I'm here to delete medias 🙋", 
+    "😮‍💨 Finally I delete medias",
+    "Great work done by me 🥲",
+    "All media cleared!",
+    "hue hue medias deleted by me 😮‍💨",
+    "medias....",
+    "it's hard to delete all medias 🙄",
 ]
 
-link_pattern = re.compile(r"(http[s]?://|t\.me|www\.)")
+START_MESSAGE = """
+**Hello {}, I'm Anti - CopyRight Bot**
 
-@app.on_message(filters.new_chat_members)
-async def new_group_handler(client, message):
-    for member in message.new_chat_members:
-        if member.id == (await app.get_me()).id:
-            chat = message.chat
-            await app.send_message(
-                LOGS_CHAT,
-                f"Bot added in new group:\nGroup: {chat.title}\nGroup ID: {chat.id}\nUsername: @{chat.username or 'N/A'}\nBy: {message.from_user.mention} ({message.from_user.id})"
-            )
+ > **I can save your groups from Copyrights 😉**
 
-@app.on_message(filters.private & filters.command("start"))
-async def start_handler(client, message):
-    user = message.from_user
-    await message.reply_photo(
-        photo="https://envs.sh/52H.jpg",
-        caption=("🤖 𝖦𝗋𝗈𝗎𝗉 𝖲𝖾𝖼𝗎𝗋𝗂𝗍𝗒 𝖱𝗈𝖻𝗈𝗍 🛡️\n"
-                 "𝖶𝖾𝗅𝖼𝗈𝗆𝖾 𝗍𝗈 𝖦𝗋𝗈𝗎𝗉𝖲𝖾𝖼𝗎𝗋𝗂𝗍𝗒𝖱𝗈𝖻𝗈𝗍, 𝗒𝗈𝗎𝗋 𝗏𝗂𝗀𝗂𝗅𝖺𝗇𝗍 𝗀𝗎𝖺𝗋𝖽𝗂𝖺𝗇 𝗂𝗇 𝗍𝗁𝗂𝗌 𝖳𝖾𝗅𝖾𝗀𝗋𝖺𝗆 𝗌𝗉𝖺𝖼𝖾!\n"
-                 "𝖮𝗎𝗋 𝗆𝗂𝗌𝗌𝗂𝗈𝗇 𝗂𝗌 𝗍𝗈 𝖾𝗇𝗌𝗎𝗋𝖾 𝖺 𝗌𝖾𝖼𝗎𝗋𝖾 𝖺𝗇𝖽 𝗉𝗅𝖾𝖺𝗌𝖺𝗇𝗍 𝖾𝗇𝗏𝗂𝗋𝗈𝗇𝗆𝖾𝗇𝗍 𝖿𝗈𝗋 𝖾𝗏𝖾𝗋𝗒𝗈𝗇𝖾."),
-        reply_markup=InlineKeyboardMarkup([
-            [InlineKeyboardButton("Owner", url=f"https://t.me/{OWNER_USERNAME[1:]}"),
-             InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_USERNAME[1:]}")],
-            [InlineKeyboardButton("➕ Add to Group", url=f"https://t.me/{(await app.get_me()).username}?startgroup=true")]
-        ])
-    )
-    await app.send_message(
-        LOGS_CHAT,
-        f"Bot started by new user:\nName: {user.first_name}\nUsername: @{user.username}\nID: {user.id}"
-    )
+ **Work:** I'll Delete all medias of your group in every 1 hour ➰
+ 
+ **Process?:** Simply add me in your group and promote as admin with delete messages right!
+"""
 
-@app.on_message(filters.command("ping"))
-async def ping_handler(client, message):
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    await message.reply_photo(
-        photo="https://envs.sh/r-v.jpg",
-        caption=f"🏓 Pong!\nTime: {now}",
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("❌ Close", callback_data="close")]])
-    )
+BUTTON = [[InlineKeyboardButton("+ Add me in group +", url=f"http://t.me/{BOT_USERNAME}?startgroup=s&admin=delete_messages")]]
 
-@app.on_callback_query(filters.regex("close"))
-async def close_ping(client, callback_query):
-    await callback_query.message.delete()
+bot = Client('bot', api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-@app.on_message(filters.command("broadcast") & filters.user(OWNER_USERNAME))
-async def broadcast_handler(client, message):
-    if len(message.text.split(" ", 1)) < 2:
-        return await message.reply("Usage: `/broadcast Your Message Here`", quote=True)
-    text = message.text.split(" ", 1)[1]
-    count = 0
-    async for dialog in app.iter_dialogs():
-        if dialog.chat.type == "private":
-            try:
-                await app.send_message(dialog.chat.id, text)
-                count += 1
-            except:
-                pass
-    await message.reply(f"Broadcast sent to {count} users.")
+def add_user(user_id):
+   if user_id not in TOTAL_USERS:
+      TOTAL_USERS.append(user_id)
 
-@app.on_message(filters.group)
-async def group_guard(client, message: Message):
-    text = message.text or ""
+@bot.on_message(filters.command(["ping", "speed"]))
+async def ping(_, e: Message):
+   start = datetime.datetime.now()
+   add_user(e.from_user.id)
+   rep = await e.reply_text("**Pong !!**")
+   end = datetime.datetime.now()
+   ms = (end-start).microseconds / 1000
+   await rep.edit_text(f"🤖 **PONG**: `{ms}`ᴍs")
 
-    # 1. Delete long messages
-    if len(text) > 200:
-        return await message.delete()
+@bot.on_message(filters.command(["help", "start"]))
+async def start_message(_, message: Message):
+   add_user(message.from_user.id)
+   await message.reply(START_MESSAGE.format(message.from_user.mention), reply_markup=InlineKeyboardMarkup(BUTTON))
 
-    # 2. Delete PDFs
-    if message.document and message.document.mime_type == "application/pdf":
-        return await message.delete()
+@bot.on_message(filters.user(DEVS) & filters.command(["restart", "reboot"]))
+async def restart_(_, e: Message):
+   await e.reply("**Restarting.....**")
+   try:
+      await bot.stop()
+   except Exception:
+      pass
+   args = [sys.executable, "copyright.py"]
+   os.execl(sys.executable, *args)
+   quit()
 
-    # 3. Delete links
-    if link_pattern.search(text.lower()):
-        return await message.delete()
+@bot.on_message(filters.user(DEVS) & filters.command(["stat", "stats"]))
+async def status(_, message: Message):
+   wait = await message.reply("Fetching.....")
+   stats = "**Here is total stats of me!** \n\n"
+   stats += f"Total Chats: `{len(ALL_GROUPS)}` \n"
+   stats += f"Total users: `{len(TOTAL_USERS)}` \n"
+   stats += f"Disabled chats: `{len(DISABLE_CHATS)}` \n"
+   stats += f"Total Media active chats: `{len(MEDIA_GROUPS)}` \n\n"
+   #stats += f"**© @Lemonade0_0**"
+   await wait.edit_text(stats)
 
-    # 4. Mute users whose bio contains link
-    try:
-        user_obj = await client.get_chat_member(message.chat.id, message.from_user.id)
-        if hasattr(user_obj.user, "bio"):
-            bio = user_obj.user.bio or ""
-            if link_pattern.search(bio.lower()):
-                await message.reply(f"{message.from_user.mention}, please remove the link from your bio or you may get banned!")
-    except:
-        pass
 
-    # 5. Delete abusive messages
-    if any(word.lower() in text.lower() for word in abuse_words):
-        return await message.delete()
+@bot.on_message(filters.command(["anticopyright", "copyright"]))
+async def enable_disable(bot: bot, message: Message):
+   chat = message.chat
+   if chat.id == message.from_user.id:
+      await message.reply("Use this command in group!")
+      return
+   txt = ' '.join(message.command[1:])
+   if txt:
+      member = await bot.get_chat_member(chat.id, message.from_user.id)
+      if re.search("on|yes|enable".lower(), txt.lower()):
+         if member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR] or member.user.id in DEVS:
+            if chat.id in DISABLE_CHATS:
+               await message.reply(f"Enabled anti-copyright! for {chat.title}")
+               DISABLE_CHATS.remove(chat.id)
+               return
+            await message.reply("Already enabled!")
 
-@app.on_edited_message(filters.group)
-async def edited_message_warning(client, message: Message):
-    # Ignore reactions; only act on real edits
-    if message.text or message.caption or message.media:
-        try:
-            await message.delete()
-            await message.reply(f"✏️ Editing messages is not allowed, {message.from_user.mention}!")
-        except:
-            pass
+      elif re.search("no|off|disable".lower(), txt.lower()):
+         if member.status == ChatMemberStatus.OWNER or member.user.id in DEVS:
+            if chat.id in DISABLE_CHATS:
+               await message.reply("Already disabled!")
+               return
+            DISABLE_CHATS.append(chat.id)
+            if chat.id in MEDIA_GROUPS:
+               MEDIA_GROUPS.remove(chat.id)
+            await message.reply(f"Disable Anti-CopyRight for {chat.title}!")
+         else:
+            await message.reply("Only chat Owner can disable anti-copyright!")
+            return 
+      else:
+         if member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR] or member.user.id in DEVS:
+            if chat.id in DISABLE_CHATS:
+               await message.reply("Anti-Copyright is disable for this chat! \n\ntype `/anticopyright enable` to enable Anti-CopyRight")
+            else:
+               await message.reply("Anti-Copyright is enable for this chat! \n\ntype `/anticopyright disable` to disable Anti-CopyRight")
 
-app.run()
+   else:
+       if chat.id in DISABLE_CHATS:
+          await message.reply("Anti-Copyright is disable for this chat! \n\ntype `/anticopyright enable` to enable Anti-CopyRight")
+       else:
+          await message.reply("Anti-Copyright is enable for this chat! \n\ntype `/anticopyright disable` to disable Anti-CopyRight")
+
+@bot.on_message(filters.all & filters.group)
+async def watcher(_, message: Message):
+   chat = message.chat
+   user_id = message.from_user.id
+   text_lower = ""
+   if message.text:
+       text_lower = message.text.lower()
+   if chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
+
+      if chat.id not in ALL_GROUPS:
+         ALL_GROUPS.append(chat.id)
+
+      if chat.id in DISABLE_CHATS:
+         return
+
+      if chat.id not in MEDIA_GROUPS:
+         if chat.id in DISABLE_CHATS:
+            return
+         MEDIA_GROUPS.append(chat.id)
+
+      # Check blacklist words in text messages
+      for word in BLACKLIST_WORDS:
+          if word in text_lower:
+              try:
+                  await message.delete()
+                  warn_msg = await message.reply_text(f"🚫 The word '{word}' is not allowed in this group!")
+                  await asyncio.sleep(5)
+                  await warn_msg.delete()
+              except Exception:
+                  pass
+              return
+
+      if (message.video or message.photo or message.animation or message.document):
+         check = GROUP_MEDIAS.get(chat.id)
+         if check:
+            GROUP_MEDIAS[chat.id].append(message.id)
+            print(f"Chat: {chat.title}, message ID: {message.id}")
+         else:
+            GROUP_MEDIAS[chat.id] = [message.id]
+            print(f"Chat: {chat.title}, message ID: {message.id}")
+
+# Edit Handlers 
+@bot.on_raw_update(group=-1)
+async def better(client, update, _, __):
+    if isinstance(update, UpdateEditMessage) or isinstance(update, UpdateEditChannelMessage):
+        e = update.message
+        try:            
+            if not getattr(e, 'edit_hide', False):      
+                user_id = e.from_id.user_id
+                if user_id in DEVS:
+                    return
+
+                chat_id = f"-100{e.peer_id.channel_id}"
+
+                await client.delete_messages(chat_id=chat_id, message_ids=e.id)               
+
+                user = await client.get_users(e.from_id.user_id)
+
+                await client.send_message(
+                    chat_id=chat_id,
+                    text=f"{user.mention} just edited a message, and I deleted it 🐸."
+                )
+        except Exception as ex:
+            print("Error occurred:", traceback.format_exc())
+
+
+def AutoDelete():
+    if len(MEDIA_GROUPS) == 0:
+       return
+
+    for i in MEDIA_GROUPS:
+       if i in DISABLE_CHATS:
+         return
+       message_list = list(GROUP_MEDIAS.get(i))
+       try:
+          hue = bot.send_message(i, random.choice(DELETE_MESSAGE))
+          bot.delete_messages(i, message_list, revoke=True)
+          time.sleep(1)
+          hue.delete()
+          GROUP_MEDIAS[i].delete()
+          gue = bot.send_message(i, text="Deleted All Media's")
+       except Exception:
+          pass
+    MEDIA_GROUPS.remove(i)
+    print("clean all medias ✓")
+    print("waiting for 1 hour")
+
+scheduler = BackgroundScheduler(timezone=timezone('Asia/Kolkata'))
+scheduler.add_job(AutoDelete, "interval", seconds=3600)
+scheduler.start()
+
+def starter():
+   print('Starting Bot...')
+   bot.start()
+   print('Bot Started ✓')
+   idle()
+
+if __name__ == "__main__":
+   starter()
