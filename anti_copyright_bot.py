@@ -42,7 +42,7 @@ DELETE_MESSAGE = [
     "it's hard to delete all medias 🙄",
 ]
 
-BLACKLIST_WORDS = ["mc","madarchod","randi","sex","xxx","gand","lund","land","bc","bhenchod","chut","lawda","gandu","spam","fuck","bhadwa",chutiya","shit"]
+BLACKLIST_WORDS = ["mc","madarchod","randi","sex","xxx","gand","lund","land","bc","bhenchod","chut","lawda","gandu","spam","fuck","bhadwa","chutiya","shit"]
 
 DISABLE_CHATS = []
 MEDIA_GROUPS = []
