@@ -42,7 +42,7 @@ DELETE_MESSAGE = [
     "it's hard to delete all medias 🙄",
 ]
 
-BLACKLIST_WORDS = ["mc","madarchod","randi","sex","xxx","gand","lund","land","bc","bhenchod","chut","lawda","gandu","spam","fuck","bhadwa","chutiya","shit"]
+BLACKLIST_WORDS = ["mc","madarchod","randi","sex","xxx","gand","lund","land","bc","bhenchod","chut","lawda","gandu","spam","fuck","shit"]
 
 DISABLE_CHATS = []
 MEDIA_GROUPS = []
@@ -118,16 +118,17 @@ async def restart_(_, e: Message):
 @bot.on_message(filters.user(DEVS) & filters.command(["stat", "stats"]))
 async def status(_, message: Message):
     wait = await message.reply("Fetching.....")
-    total_groups = groups_collection.count_documents({})
-    total_users = users_collection.count_documents({})
-    disabled_chats = len(DISABLE_CHATS)
-    media_active_chats = len(MEDIA_GROUPS)
+    total_groups = await asyncio.to_thread(groups_collection.count_documents, {})
+    total_users = await asyncio.to_thread(users_collection.count_documents, {})
+    disabled_chats_count = len(DISABLE_CHATS)
+    media_active_chats_count = len(MEDIA_GROUPS)
+
     stats = (
         "📊 Here is total stats of me!\n\n"
         f"➤ Total Groups: {total_groups}\n"
         f"➤ Total Users: {total_users}\n"
-        f"➤ Disabled Chats: {disabled_chats}\n"
-        f"➤ Media Active Chats: {media_active_chats}\n"
+        f"➤ Disabled Chats: {disabled_chats_count}\n"
+        f"➤ Media Active Chats: {media_active_chats_count}\n"
     )
     await wait.edit_text(stats)
 
