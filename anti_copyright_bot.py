@@ -116,21 +116,23 @@ async def restart_(_, e: Message):
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 @bot.on_message(filters.user(DEVS) & filters.command(["stat", "stats"]))
-async def status(_, message: Message):
-    wait = await message.reply("Fetching.....")
-    total_groups = await asyncio.to_thread(groups_collection.count_documents, {})
-    total_users = await asyncio.to_thread(users_collection.count_documents, {})
-    disabled_chats_count = len(DISABLE_CHATS)
-    media_active_chats_count = len(MEDIA_GROUPS)
+async def stats_handler(client, message):
+    try:
+        total_groups = groups_collection.count_documents({})
+        total_users = users_collection.count_documents({})
+        disabled_chats_count = len(DISABLE_CHATS)
+        media_active_chats_count = len(MEDIA_GROUPS)
 
-    stats = (
-        "📊 Here is total stats of me!\n\n"
-        f"➤ Total Groups: {total_groups}\n"
-        f"➤ Total Users: {total_users}\n"
-        f"➤ Disabled Chats: {disabled_chats_count}\n"
-        f"➤ Media Active Chats: {media_active_chats_count}\n"
-    )
-    await wait.edit_text(stats)
+        text = (
+            "📊 Bot Statistics:\n\n"
+            f"👥 Total Groups: {total_groups}\n"
+            f"👤 Total Users: {total_users}\n"
+            f"🚫 Disabled Chats: {disabled_chats_count}\n"
+            f"🎞️ Media Active Chats: {media_active_chats_count}"
+        )
+        await message.reply_text(text)
+    except Exception as e:
+        await message.reply_text(f"Error fetching stats: {e}")
 
 @bot.on_message(filters.command(["anticopyright", "copyright"]))
 async def enable_disable(bot: bot, message: Message):
