@@ -21,7 +21,8 @@ MONGO_URL = "mongodb+srv://manoranjanhor43:somuxd@manoranjan.wsglmdq.mongodb.net
 DEVS = [6908972904]
 BOT_USERNAME = "silent_copyright_bot"
 
-mongo = MongoClient(MONGO_URL)
+# MongoDB Connection (Fixed)
+mongo = MongoClient(MONGO_URL, tls=True)
 db = mongo['copyright_bot']
 groups_collection = db['groups']
 users_collection = db['users']
@@ -193,6 +194,9 @@ scheduler.start()
 
 def starter():
     print('Starting Bot...')
+    # SQLite সেশন ক্লিয়ার করার আগে ডিলিট করো (run করার আগে)
+    if os.path.exists("bot.session"):
+        os.remove("bot.session")
     bot.start()
     print('Bot Started ✓')
     idle()
