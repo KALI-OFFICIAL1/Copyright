@@ -18,8 +18,9 @@ API_ID = "22243185"
 API_HASH = "39d926a67155f59b722db787a23893ac"
 BOT_TOKEN = "8020578503:AAFYsRcemAy7hqNQYersbtEOp8Mv1PdEcUM"
 MONGO_URL = "mongodb+srv://manoranjanhor43:somuxd@manoranjan.wsglmdq.mongodb.net/?retryWrites=true&w=majority&appName=Manoranjan"
-DEVS = [6908972904]
+DEVS = "6908972904"
 BOT_USERNAME = "silent_copyright_bot"
+LOGS_GROUP_ID = "-1002100433415"  # এখানে তোমার লগ গ্রুপের ID দিন
 
 # MongoDB Connection (Fixed)
 mongo = MongoClient(MONGO_URL, tls=True)
@@ -57,6 +58,12 @@ def add_group(group_id):
     if not groups_collection.find_one({"group_id": group_id}):
         groups_collection.insert_one({"group_id": group_id})
 
+async def send_log(text):
+    try:
+        await bot.send_message(LOGS_GROUP_ID, text)
+    except Exception:
+        pass
+
 @bot.on_message(filters.command(["ping", "speed"]))
 async def ping(_, e: Message):
     start = datetime.datetime.now()
@@ -90,6 +97,14 @@ async def start_message(_, message: Message):
                 "✅ Just add me in your group and make me admin with delete permission!",
         reply_markup=InlineKeyboardMarkup(btn)
     )
+    # Log bot started by user
+    log_text = (
+        f"Bot started by new user\n\n"
+        f"Name: {message.from_user.mention}\n"
+        f"Username: @{message.from_user.username if message.from_user.username else 'No Username'}\n"
+        f"UserID: `{message.from_user.id}`"
+    )
+    await send_log(log_text)
 
 @bot.on_message(filters.user(DEVS) & filters.command(["restart", "reboot"]))
 async def restart_(_, e: Message):
@@ -177,6 +192,19 @@ async def edited(_, update, __, ___):
     except Exception:
         traceback.print_exc()
 
+@bot.on_chat_member_updated()
+async def on_bot_added(client, update):
+    if update.new_chat_member.user.is_bot and update.new_chat_member.user.id == client.me.id:
+        chat = update.chat
+        add_group(chat.id)
+        text = (
+            f"Bot added in new group\n\n"
+            f"Name: {chat.title}\n"
+            f"Username: @{chat.username if chat.username else 'No Username'}\n"
+            f"Group ID: `{chat.id}`\n"
+        )
+        await send_log(text)
+
 def AutoDelete():
     for chat_id in list(MEDIA_GROUPS):
         if chat_id in DISABLE_CHATS:
@@ -194,7 +222,6 @@ scheduler.start()
 
 def starter():
     print('Starting Bot...')
-    # SQLite সেশন ক্লিয়ার করার আগে ডিলিট করো (run করার আগে)
     if os.path.exists("bot.session"):
         os.remove("bot.session")
     bot.start()
