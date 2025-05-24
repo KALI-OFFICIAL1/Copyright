@@ -18,9 +18,9 @@ API_ID = "22243185"
 API_HASH = "39d926a67155f59b722db787a23893ac"
 BOT_TOKEN = "8020578503:AAFYsRcemAy7hqNQYersbtEOp8Mv1PdEcUM"
 MONGO_URL = "mongodb+srv://manoranjanhor43:somuxd@manoranjan.wsglmdq.mongodb.net/?retryWrites=true&w=majority&appName=Manoranjan"
-DEVS = "6908972904"
+DEVS = [6908972904]
 BOT_USERNAME = "silent_copyright_bot"
-LOGS_GROUP_ID = "-1002100433415"  # এখানে তোমার লগ গ্রুপের ID দিন
+LOGS_GROUP_ID = -1002100433415  # এখানে তোমার লগ গ্রুপের ID দিন
 
 # MongoDB Connection (Fixed)
 mongo = MongoClient(MONGO_URL, tls=True)
@@ -42,7 +42,7 @@ DELETE_MESSAGE = [
     "it's hard to delete all medias 🙄",
 ]
 
-BLACKLIST_WORDS = ["mc","madarchod","randi","sex","xxx","gand","lund","land","bc","bhenchod","chut","lawda","gandu","spam","fuck","shit"]
+BLACKLIST_WORDS = ["mc","madarchod","randi","sex","xxx","gand","lund","land","bc","bhenchod","chut","lawda","gandu","spam","fuck","bhadwa",chutiya","shit"]
 
 DISABLE_CHATS = []
 MEDIA_GROUPS = []
@@ -118,12 +118,16 @@ async def restart_(_, e: Message):
 @bot.on_message(filters.user(DEVS) & filters.command(["stat", "stats"]))
 async def status(_, message: Message):
     wait = await message.reply("Fetching.....")
+    total_groups = groups_collection.count_documents({})
+    total_users = users_collection.count_documents({})
+    disabled_chats = len(DISABLE_CHATS)
+    media_active_chats = len(MEDIA_GROUPS)
     stats = (
         "📊 Here is total stats of me!\n\n"
-        f"➤ Total Groups: {groups_collection.count_documents({})}\n"
-        f"➤ Total Users: {users_collection.count_documents({})}\n"
-        f"➤ Disabled Chats: {len(DISABLE_CHATS)}\n"
-        f"➤ Media Active Chats: {len(MEDIA_GROUPS)}\n"
+        f"➤ Total Groups: {total_groups}\n"
+        f"➤ Total Users: {total_users}\n"
+        f"➤ Disabled Chats: {disabled_chats}\n"
+        f"➤ Media Active Chats: {media_active_chats}\n"
     )
     await wait.edit_text(stats)
 
