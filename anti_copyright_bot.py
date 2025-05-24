@@ -18,9 +18,9 @@ API_ID = "22243185"
 API_HASH = "39d926a67155f59b722db787a23893ac"
 BOT_TOKEN = "8020578503:AAFYsRcemAy7hqNQYersbtEOp8Mv1PdEcUM"
 MONGO_URL = "mongodb+srv://manoranjanhor43:somuxd@manoranjan.wsglmdq.mongodb.net/?retryWrites=true&w=majority&appName=Manoranjan"
-DEVS = [6908972904]
+DEVS = "6908972904"
 BOT_USERNAME = "silent_copyright_bot"
-LOGS_GROUP_ID = -1002100433415  # এখানে তোমার লগ গ্রুপের ID দিন
+LOGS_GROUP_ID = "-1002100433415"  # এখানে তোমার লগ গ্রুপের ID দিন
 
 # MongoDB Connection (Fixed)
 mongo = MongoClient(MONGO_URL, tls=True)
